@@ -9,12 +9,15 @@ export async function fetchVehicleInfo(
     setTimeout(() => resolve(MOCK_VEHICLE_LOOKUP[vehicleId]), 1000));
 }
 
+export const roundToHundredths: Function = (num: number): number =>
+  Math.round(num * 100) / 100;
+
 export function calculateVehicleValue(
   purchaseValue: number,
   monthsSincePurchase: number,
   monthlyDepreciation: number,
 ): number {
-  return Math.round((purchaseValue * (1 - monthlyDepreciation) ** monthsSincePurchase) * 100) / 100;
+  return roundToHundredths(purchaseValue * (1 - monthlyDepreciation) ** monthsSincePurchase);
 }
 
 export function calculateLoanBalance(
@@ -33,7 +36,7 @@ export function calculateLoanBalance(
   const monthlyPayment: number = (monthlyInterestRate * principal)
     / (1 - ((1 + monthlyInterestRate) ** -loanTermMonths));
 
-  return Math.round(monthsRemaining * monthlyPayment * 100) / 100;
+  return roundToHundredths(monthsRemaining * monthlyPayment);
 }
 
 export function calculateMonthsSinceDate(
