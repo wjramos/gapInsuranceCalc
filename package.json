@@ -1,0 +1,25 @@
+{
+  "name": "gapinsurance",
+  "version": "0.0.1",
+  "dependencies": {},
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "build": "babel src -d dist --extensions '.ts'"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.2.3",
+    "@babel/preset-typescript": "^7.1.0",
+    "@types/jest": "^23.3.12",
+    "jest": "^23.6.0",
+    "ts-jest": "^23.10.5",
+    "tslint": "^5.12.1",
+    "tslint-config-airbnb": "^5.11.1",
+    "typescript": "^3.2.2"
+  }
+}
