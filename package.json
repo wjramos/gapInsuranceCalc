@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "build": "babel src -d dist --extensions '.ts'"
+    "test:coverage": "jest --coverage",
+    "build": "babel src -d dist --extensions '.ts'",
+    "build:clean": "rm -rf dist"
   },
   "author": "",
   "license": "ISC",
