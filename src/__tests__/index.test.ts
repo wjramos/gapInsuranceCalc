@@ -5,7 +5,7 @@ import {
   expensiveVehicle,
   highDepreciationVehicle,
 } from '../mocks';
-import shouldShowGapInsurance from '..';
+import shouldShowGapInsurance, { ERROR_VEHICLE_LOOKUP } from '..';
 
 const HIGH_INTEREST: number = 100;
 const STANDARD_INTEREST: number = 0.042;
@@ -153,5 +153,18 @@ describe('shouldShowGapInsurance', () => {
     );
 
     expect(showGapInsurance).toBe(false);
+  });
+
+  it('Should throw an error if unable to fetch vehicle information', async () => {
+    try {
+      await shouldShowGapInsurance(
+        'unknownVehicle',
+        1000,
+        STANDARD_INTEREST,
+        12,
+      );
+    } catch (e) {
+      expect(e).toEqual(new Error(ERROR_VEHICLE_LOOKUP));
+    }
   });
 });

@@ -6,6 +6,8 @@ import {
 } from './utils';
 import VehicleDetails from './types/VehicleDetails';
 
+export const ERROR_VEHICLE_LOOKUP: string = 'Failed to retrieve vehicle information';
+
 export default async function shouldShowGapInsurance(
   vehicleId: string,
   amountFinanced: number,
@@ -16,8 +18,12 @@ export default async function shouldShowGapInsurance(
 
   try {
     vehicleInfo = await fetchVehicleInfo(vehicleId);
+
+    if (!vehicleInfo) {
+      throw new Error();
+    }
   } catch (e) {
-    throw new Error('Failed to retrieve vehicle Information');
+    throw new Error(ERROR_VEHICLE_LOOKUP);
   }
 
   const {
