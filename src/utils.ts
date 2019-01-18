@@ -1,4 +1,3 @@
-import { YEAR_MS } from './constants';
 import * as mockVehicleLookup from './mocks';
 
 // @NOTE Mocked async api request
@@ -39,10 +38,4 @@ export function calculateLoanBalance(
     / (1 - ((1 + monthlyInterestRate) ** -loanTermMonths));
 
   return roundToHundredths(monthsRemaining * monthlyPayment);
-}
-
-export function calculateMonthsSinceDate(
-  timestamp: number,
-): number {
-  return Math.floor((Date.now() - timestamp) / (YEAR_MS / 12));
 }

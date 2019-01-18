@@ -1,6 +1,5 @@
 import {
   fetchVehicleInfo,
-  calculateMonthsSinceDate,
   calculateVehicleValue,
   calculateLoanBalance,
 } from './utils';

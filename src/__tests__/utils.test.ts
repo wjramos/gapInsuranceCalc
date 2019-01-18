@@ -1,11 +1,9 @@
 import {
   fetchVehicleInfo,
   roundToHundredths,
-  calculateMonthsSinceDate,
   calculateVehicleValue,
   calculateLoanBalance,
 } from '../utils';
-import { YEAR_MS } from '../constants';
 
 describe('utils', () => {
   // fetchVehicleInfo is a mock api fetch
@@ -15,14 +13,6 @@ describe('utils', () => {
     it('should round a number to the hundredths place', () => {
       expect(roundToHundredths(0.128)).toBe(0.13);
       expect(roundToHundredths(0.999)).toBe(1);
-    });
-  });
-
-  describe('calculateMonthsSinceDate', () => {
-    it('Should return the number of months between now and a provided date', () => {
-      expect(calculateMonthsSinceDate(Date.now())).toBe(0);
-      expect(calculateMonthsSinceDate(Date.now() - YEAR_MS)).toBe(12);
-      expect(calculateMonthsSinceDate(Date.now() - (YEAR_MS / 4))).toBe(3);
     });
   });
 
