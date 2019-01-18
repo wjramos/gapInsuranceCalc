@@ -26,26 +26,27 @@ export default async function shouldShowGapInsurance(
     throw new Error(ERROR_VEHICLE_LOOKUP);
   }
 
-  const {
-    purchaseValue,
-    datePurchased,
-    monthlyDepreciation,
-  }: VehicleDetails = vehicleInfo;
+  const { monthlyDepreciation }: VehicleDetails = vehicleInfo;
 
-  const monthsSincePurchase: number = calculateMonthsSinceDate(datePurchased);
-  const vehicleValue: number = calculateVehicleValue(
-    purchaseValue,
-    monthsSincePurchase,
-    monthlyDepreciation,
-  );
+  for (let monthsSincePurchase = 0; monthsSincePurchase <= loanTermMonths; monthsSincePurchase++) {
+    const vehicleValue: number = calculateVehicleValue(
+      amountFinanced,
+      monthlyDepreciation,
+      monthsSincePurchase,
+    );
 
-  const loanBalance: number = calculateLoanBalance(
-    amountFinanced,
-    annualInterestRate,
-    loanTermMonths,
-    monthsSincePurchase,
-  );
+    const loanBalance: number = calculateLoanBalance(
+      amountFinanced,
+      annualInterestRate,
+      loanTermMonths,
+      monthsSincePurchase,
+    );
 
-  // @TODO add support for early termination fee (if applicable to loan)
-  return vehicleValue < loanBalance;
+    // @TODO add support for early termination fee (if applicable to loan)
+    if (vehicleValue < loanBalance) {
+      return true;
+    }
+  }
+
+  return false;
 }

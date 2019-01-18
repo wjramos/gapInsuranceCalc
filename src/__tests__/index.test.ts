@@ -1,158 +1,175 @@
 import {
   baseVehicle,
-  oldVehicle,
-  brandNewVehicle,
-  expensiveVehicle,
   highDepreciationVehicle,
+  MONTHLY_DEPRECIATION,
+  HIGH_MONTHLY_DEPRECIATION,
+  LOW_MONTHLY_DEPRECIATION,
 } from '../mocks';
 import shouldShowGapInsurance, { ERROR_VEHICLE_LOOKUP } from '..';
 
-const HIGH_INTEREST: number = 100;
-const STANDARD_INTEREST: number = 0.042;
+const BASE_APR: number = 0.042;
+const BASE_PRICE: number = 15000;
+
+const HIGH_APR: number = 100;
+const HIGH_PRICE: number = 100000;
+
+const LOW_APR: number = 0.0001;
 
 describe('shouldShowGapInsurance', () => {
-  it('Should show GAP insurance products if the loan balance is greater than the value of the totaled vehicle with depreciation', async () => {
-    const minLoanTermMonths: number = 49;
-    const showGapInsurance: boolean = await shouldShowGapInsurance(
-      'baseVehicle',
-      baseVehicle.purchaseValue,
-      STANDARD_INTEREST,
-      minLoanTermMonths,
-    );
+  describe('Base case', () => {
+    const minLoanTermMonths: number = 20;
 
-    expect(showGapInsurance).toBe(true);
+    it(`Should display GAP insurance for a $${BASE_PRICE} loan on a vehicle with ${MONTHLY_DEPRECIATION * 100}% monthly depreciation with a ${BASE_APR * 100}% APR if the duration is ${minLoanTermMonths} months or longer`, async () => {
+      const showGapInsurance: boolean = await shouldShowGapInsurance(
+        'baseVehicle',
+        BASE_PRICE,
+        BASE_APR,
+        minLoanTermMonths,
+      );
+
+      expect(showGapInsurance).toBe(true);
+    });
+
+    it(`Should not display GAP insurance for a $${BASE_PRICE} loan on a vehicle with ${MONTHLY_DEPRECIATION * 100}% monthly depreciation with a ${BASE_APR * 100}% APR if the duration is less than ${minLoanTermMonths} months`, async () => {
+      const showGapInsurance: boolean = await shouldShowGapInsurance(
+        'baseVehicle',
+        BASE_PRICE,
+        BASE_APR,
+        minLoanTermMonths - 1,
+      );
+
+      expect(showGapInsurance).toBe(false);
+    });
   });
 
-  it('Should not show GAP insurance products if the loan balance is less than the value of the totaled vehicle with depreciation', async () => {
-    const maxLoanTermMonths: number = 48;
-    const showGapInsurance: boolean = await shouldShowGapInsurance(
-      'baseVehicle',
-      baseVehicle.purchaseValue,
-      STANDARD_INTEREST,
-      maxLoanTermMonths,
-    );
+  describe('Loan amount (does not affect the minimum loan duration)', () => {
+    const minLoanTermMonths: number = 20;
 
-    expect(showGapInsurance).toBe(false);
+    it(`Should display GAP insurance for a $${HIGH_PRICE} loan on a vehicle with ${MONTHLY_DEPRECIATION * 100}% monthly depreciation with a ${BASE_APR * 100}% APR if the duration is ${minLoanTermMonths} months or longer`, async () => {
+      const showGapInsurance: boolean = await shouldShowGapInsurance(
+        'baseVehicle',
+        HIGH_PRICE,
+        BASE_APR,
+        minLoanTermMonths,
+      );
+
+      expect(showGapInsurance).toBe(true);
+    });
+
+    it(`Should not display GAP insurance for a $${HIGH_PRICE} loan on a vehicle with ${MONTHLY_DEPRECIATION * 100}% monthly depreciation with a ${BASE_APR * 100}% APR if the duration is less than ${minLoanTermMonths} months`, async () => {
+      const showGapInsurance: boolean = await shouldShowGapInsurance(
+        'baseVehicle',
+        HIGH_PRICE,
+        BASE_APR,
+        minLoanTermMonths - 1,
+      );
+
+      expect(showGapInsurance).toBe(false);
+    });
   });
 
-  it('Should show GAP insurance products for a high interest loan with a longer loan term', async () => {
-    const minLoanTermMonths: number = 13;
-    const showGapInsurance: boolean = await shouldShowGapInsurance(
-      'baseVehicle',
-      baseVehicle.purchaseValue,
-      HIGH_INTEREST,
-      minLoanTermMonths,
-    );
+  describe('High interest rate', () => {
+    const minLoanTermMonths: number = 2;
 
-    expect(showGapInsurance).toBe(true);
+    it(`Should display GAP insurance for a $${BASE_PRICE} loan on a vehicle with ${MONTHLY_DEPRECIATION * 100}% monthly depreciation with a ${HIGH_APR * 100}% APR if the duration is ${minLoanTermMonths} months or longer`, async () => {
+      const showGapInsurance: boolean = await shouldShowGapInsurance(
+        'baseVehicle',
+        BASE_PRICE,
+        HIGH_APR,
+        minLoanTermMonths,
+      );
+
+      expect(showGapInsurance).toBe(true);
+    });
+
+    it(`Should not display GAP insurance for a $${BASE_PRICE} loan on a vehicle with ${MONTHLY_DEPRECIATION * 100}% monthly depreciation with a ${HIGH_APR * 100}% APR if the duration is shorter than ${minLoanTermMonths} months`, async () => {
+      const showGapInsurance: boolean = await shouldShowGapInsurance(
+        'baseVehicle',
+        BASE_PRICE,
+        HIGH_APR,
+        minLoanTermMonths - 1,
+      );
+
+      expect(showGapInsurance).toBe(false);
+    });
   });
 
-  it('Should not show GAP insurance products for a high interest loan with a shorter loan term', async () => {
-    const maxLoanTermMonths: number = 12;
-    const showGapInsurance: boolean = await shouldShowGapInsurance(
-      'baseVehicle',
-      baseVehicle.purchaseValue,
-      HIGH_INTEREST,
-      maxLoanTermMonths,
-    );
+  describe('Low interest rate', () => {
+    const minLoanTermMonths: number = 60;
 
-    expect(showGapInsurance).toBe(false);
+    it(`Should display GAP insurance for a $${BASE_PRICE} loan on a vehicle with ${MONTHLY_DEPRECIATION * 100}% monthly depreciation with a ${LOW_APR * 100}% APR if the duration is ${minLoanTermMonths} months or longer`, async () => {
+      const showGapInsurance: boolean = await shouldShowGapInsurance(
+        'baseVehicle',
+        BASE_PRICE,
+        LOW_APR,
+        minLoanTermMonths,
+      );
+
+      expect(showGapInsurance).toBe(true);
+    });
+
+    it(`Should not display GAP insurance for a $${BASE_PRICE} loan on a vehicle with ${MONTHLY_DEPRECIATION * 100}% monthly depreciation with a ${LOW_APR * 100}% APR if the duration is less than ${minLoanTermMonths} months`, async () => {
+      const showGapInsurance: boolean = await shouldShowGapInsurance(
+        'baseVehicle',
+        BASE_PRICE,
+        LOW_APR,
+        minLoanTermMonths - 1,
+      );
+
+      expect(showGapInsurance).toBe(false);
+    });
   });
 
-  it('Should show GAP insurance products for a car purchased 2 years ago and with a longer loan term', async () => {
-    const minLoanTermMonths: number = 61;
-    const showGapInsurance: boolean = await shouldShowGapInsurance(
-      'oldVehicle',
-      oldVehicle.purchaseValue,
-      STANDARD_INTEREST,
-      minLoanTermMonths,
-    );
+  describe('High depreciation rate', () => {
+    const minLoanTermMonths: number = 15;
 
-    expect(showGapInsurance).toBe(true);
+    it(`Should display GAP insurance for a $${BASE_PRICE} loan on a vehicle with ${HIGH_MONTHLY_DEPRECIATION * 100}% monthly depreciation with a ${BASE_APR * 100}% APR if the duration is ${minLoanTermMonths} months or longer`, async () => {
+      const showGapInsurance: boolean = await shouldShowGapInsurance(
+        'highDepreciationVehicle',
+        BASE_PRICE,
+        BASE_APR,
+        minLoanTermMonths,
+      );
+
+      expect(showGapInsurance).toBe(true);
+    });
+
+    it(`Should not display GAP insurance for a $${BASE_PRICE} loan on a vehicle with ${HIGH_MONTHLY_DEPRECIATION * 100}% monthly depreciation with a ${BASE_APR * 100}% APR if the duration is less than ${minLoanTermMonths} months`, async () => {
+      const showGapInsurance: boolean = await shouldShowGapInsurance(
+        'highDepreciationVehicle',
+        BASE_PRICE,
+        BASE_APR,
+        minLoanTermMonths - 1,
+      );
+
+      expect(showGapInsurance).toBe(false);
+    });
   });
 
-  it('Should not show GAP insurance products for a car purchased 2 years ago and with a shorter loan term', async () => {
-    const maxLoanTermMonths: number = 60;
-    const showGapInsurance: boolean = await shouldShowGapInsurance(
-      'oldVehicle',
-      oldVehicle.purchaseValue,
-      STANDARD_INTEREST,
-      maxLoanTermMonths,
-    );
+  describe('Low depreciation rate', () => {
+    const minLoanTermMonths: number = 24;
 
-    expect(showGapInsurance).toBe(false);
-  });
+    it(`Should display GAP insurance for a $${BASE_PRICE} loan on a vehicle with ${LOW_MONTHLY_DEPRECIATION * 100}% monthly depreciation with a ${BASE_APR * 100}% APR if the duration is ${minLoanTermMonths} months or longer`, async () => {
+      const showGapInsurance: boolean = await shouldShowGapInsurance(
+        'lowDepreciationVehicle',
+        BASE_PRICE,
+        BASE_APR,
+        minLoanTermMonths,
+      );
 
-  it('Should show GAP insurance products for a vehicle purchased today with any amount of remaining loan term', async () => {
-    const maxLoanTermMonths: number = 1;
-    const showGapInsurance: boolean = await shouldShowGapInsurance(
-      'brandNewVehicle',
-      brandNewVehicle.purchaseValue,
-      STANDARD_INTEREST,
-      maxLoanTermMonths,
-    );
+      expect(showGapInsurance).toBe(true);
+    });
 
-    expect(showGapInsurance).toBe(true);
-  });
+    it(`Should not display GAP insurance for a $${BASE_PRICE} loan on a vehicle with ${LOW_MONTHLY_DEPRECIATION * 100}% monthly depreciation with a ${BASE_APR * 100}% APR if the duration is less than ${minLoanTermMonths} months`, async () => {
+      const showGapInsurance: boolean = await shouldShowGapInsurance(
+        'lowDepreciationVehicle',
+        BASE_PRICE,
+        BASE_APR,
+        minLoanTermMonths - 1,
+      );
 
-  it('Should not show GAP insurance products for a vehicle purchased today and immediately paid off', async () => {
-    const maxLoanTermMonths: number = 0;
-    const showGapInsurance: boolean = await shouldShowGapInsurance(
-      'brandNewVehicle',
-      brandNewVehicle.purchaseValue,
-      STANDARD_INTEREST,
-      maxLoanTermMonths,
-    );
-
-    expect(showGapInsurance).toBe(false);
-  });
-
-  it('Should show GAP insurance for an expensive vehicle and a longer loan term', async () => {
-    const minLoanTermMonths: number = 49;
-    const showGapInsurance: boolean = await shouldShowGapInsurance(
-      'expensiveVehicle',
-      expensiveVehicle.purchaseValue,
-      STANDARD_INTEREST,
-      minLoanTermMonths,
-    );
-
-    expect(showGapInsurance).toBe(true);
-  });
-
-  it('Should not show GAP insurance for an expensive vehicle and a shorter loan term', async () => {
-    const maxLoanTermMonths: number = 48;
-    const showGapInsurance: boolean = await shouldShowGapInsurance(
-      'expensiveVehicle',
-      expensiveVehicle.purchaseValue,
-      STANDARD_INTEREST,
-      maxLoanTermMonths,
-    );
-
-    expect(showGapInsurance).toBe(false);
-  });
-
-  it('Should show GAP insurance products for vehicles with especially high depreciation and a longer loan term', async () => {
-    const minLoanTermMonths: number = 28;
-    const showGapInsurance: boolean = await shouldShowGapInsurance(
-      'highDepreciationVehicle',
-      highDepreciationVehicle.purchaseValue,
-      STANDARD_INTEREST,
-      minLoanTermMonths,
-    );
-
-    expect(showGapInsurance).toBe(true);
-  });
-
-  it('Should not show GAP insurance products for vehicles with especially high depreciation and a shorter loan term', async () => {
-    const maxLoanTermMonths: number = 27;
-    const showGapInsurance: boolean = await shouldShowGapInsurance(
-      'highDepreciationVehicle',
-      highDepreciationVehicle.purchaseValue,
-      STANDARD_INTEREST,
-      maxLoanTermMonths,
-    );
-
-    expect(showGapInsurance).toBe(false);
+      expect(showGapInsurance).toBe(false);
+    });
   });
 
   it('Should throw an error if unable to fetch vehicle information', async () => {
@@ -160,7 +177,7 @@ describe('shouldShowGapInsurance', () => {
       await shouldShowGapInsurance(
         'unknownVehicle',
         1000,
-        STANDARD_INTEREST,
+        BASE_APR,
         12,
       );
     } catch (e) {
